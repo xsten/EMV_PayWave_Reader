@@ -38,21 +38,61 @@
         android:id="@+id/issuer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="45dp"
-        android:text="@string/issuer_initial"
-        android:layout_below="@+id/pan"
         android:layout_alignLeft="@+id/pan"
-        android:layout_alignStart="@+id/pan"/>
+        android:layout_alignStart="@+id/pan"
+        android:layout_below="@+id/pan"
+        android:layout_marginTop="13dp"
+        android:text="@string/issuer_initial" />
 
     <TextView
         android:id="@+id/expiry"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/expiry_initial"
-        android:layout_marginTop="45dp"
-        android:layout_below="@+id/issuer"
         android:layout_alignLeft="@+id/issuer"
-        android:layout_alignStart="@+id/issuer"/>
+        android:layout_alignStart="@+id/issuer"
+        android:layout_below="@+id/issuer"
+        android:layout_marginTop="16dp"
+        android:text="@string/expiry_initial" />
+
+    <TextView
+        android:id="@+id/Decision"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/expiry"
+        android:layout_alignStart="@+id/expiry"
+        android:layout_below="@+id/expiry"
+        android:layout_marginTop="12dp"
+        android:text="@string/decision" />
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="46dp"
+        android:text="@string/setTerminalTags" />
+
+    <TextView
+        android:id="@+id/Certificate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/Decision"
+        android:layout_alignStart="@+id/Decision"
+        android:layout_below="@+id/Decision"
+        android:layout_marginTop="11dp"
+        android:text="@string/Certificate" />
+
+    <TextView
+        android:id="@+id/Atc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/Certificate"
+        android:layout_alignStart="@+id/Certificate"
+        android:layout_below="@+id/Certificate"
+        android:layout_marginTop="11dp"
+        android:text="@string/Atc" />
+
 </RelativeLayout>
 
 

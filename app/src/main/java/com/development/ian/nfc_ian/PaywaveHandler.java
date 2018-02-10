@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.IsoDep;
+import android.util.Log;
+
 import java.io.IOException;
 
 
@@ -29,7 +31,7 @@ public class PaywaveHandler implements EMVReader.CardReader {
     @Override
     public byte[] transceive(byte[] data) throws IOException {
         byte[] response= null;
-
+        Log.e(getClass().getName(),"Sending:"+BinaryTools.toHex(data));
         try {
             if(!ISODEP.isConnected()){
                 ISODEP.connect();
@@ -48,6 +50,7 @@ public class PaywaveHandler implements EMVReader.CardReader {
                     response = ISODEP.transceive(getData);
                 }
             }
+            Log.e(getClass().getName(),"Received:"+BinaryTools.toHex(response));
             return response;
         } catch (IOException e) {
             e.printStackTrace();
