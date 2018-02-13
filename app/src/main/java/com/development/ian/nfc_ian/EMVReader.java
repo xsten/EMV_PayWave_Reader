@@ -27,13 +27,10 @@ package com.development.ian.nfc_ian;
 
 import android.util.Log;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -52,15 +49,16 @@ public class EMVReader
 
     public Integer expiryMonth,expiryYear;
     public String pan;
+    public String cardholderName;
     public String decision=null;
     public String applicationCryptogram=null;
     public String atc=null;
+    public String iad=null;
     public byte [] aid;
     public String issuer;
     byte [] PDOL;
+    byte [] CDOL1;
 
-
-    private static ArrayList<String> TERMINALTAGS=new ArrayList<String>();
     private String ttq="68000000";
     private String amount="000000000010";
     private String amountOther="000000000000";
@@ -85,6 +83,8 @@ public class EMVReader
     public static final byte [] AID_PSE={
         '1','P','A','Y','.','S','Y','S','.','D','D','F','0','1'    
     };
+
+    private ArrayList<AflRecord> afl=new ArrayList<>();
 
     private int getTagLen(byte[] data, int offset, int len)
     {
@@ -166,16 +166,20 @@ public class EMVReader
         reader=r;
         aid=b;
         adf=a;
-
-        String[] tt=new String[]{"9f66","9f02","9f03","9f1a","95","5f2a","9a","9c","9f37"};
-        TERMINALTAGS.addAll(Arrays.asList(tt));
     }
     
     interface EnumCallback
     {
         public boolean found(int tag, int len, byte[] data, int offset) throws IOException;
     }
-    
+
+    class AflRecord
+    {
+        public byte sfi; // Short File Identifier
+        public byte firstrec; // First record to read (included)
+        public byte lastrec; // Last record to read (included)
+        public byte nrrecforxda; // Number of records participating in Data Authentication
+    }
     class ReadPDOData implements EnumCallback
     {
         @Override
@@ -191,17 +195,21 @@ public class EMVReader
                     result=readTrack2Equivalent(data,offset,len);
                     break;
                 // If we encapsulate the calls, the treatment of tag 77 will be interrupted, and we will never get 9F27
-                //case 0x94:
-                //    result=readAFL(data,offset,len);
-                //    break;
+                case 0x94:
+                    result=readAFL(data,offset,len);
+                    break;
                 case 0x9F27:
                     result=readCryptogramInformationData(data,offset,len);
                     break;
                 case 0x9F26:
+                case 0x9F4B:
                     result=readApplicationCryptogram(data,offset,len);
                     break;
                 case 0x9F36:
                     result=readAtc(data,offset,len);
+                    break;
+                case 0x9F10:
+                    result=readIAD(data,offset,len);
                     break;
 
             }
@@ -271,17 +279,16 @@ public class EMVReader
             {
 
 
-                int pdolLen=getPDOLlength(PDOL,0,PDOL.length);
+                int pdolLen= getDOLlength(PDOL,0,PDOL.length);
                                 
                 pdolData=new byte[pdolLen+2];
                 pdolData[0]=(byte)0x83;
                 pdolData[1]=(byte)pdolLen;
                 
-                fillPDOL(PDOL,0,PDOL.length,pdolData,2);
+                fillDOL(PDOL,0,PDOL.length,pdolData,2);
 
             }
-           
-            if (pdolData==null)
+            else
             {
                 pdolData=new byte[]{(byte)0x83,0x00};
             }
@@ -307,10 +314,54 @@ public class EMVReader
                 result=parse(pdo,resp,0,resp.length-2);
             }
 
+            // AFL indicates everything that needs to be read on the card
+            Log.d(getClass().getName(),"Parse AFL");
+            for(AflRecord aflRecord:afl) {
+                byte sfi = aflRecord.sfi;
+                byte firstRec = aflRecord.firstrec;
+                byte lastRec = aflRecord.lastrec;
+                byte authNum = aflRecord.nrrecforxda;
+
+                while (result && (firstRec <= lastRec)) {
+                    result = readRecord((byte) (0x1f & (sfi >> 3)), firstRec);
+
+                    firstRec++;
+                }
+            }
 
             // byte[] pdolWithData=buildTerminalData(PDOL);
             // Log.i(getClass().getName(),"PDOL data to send : "+BinaryTools.toHex(pdolWithData));
+            byte[] cdol1Data;
+            if(applicationCryptogram==null)
+            {
+                Log.e(getClass().getName(),"Application cryptogram not yet generated (Mastercard ?) ");
+                if (CDOL1!=null)
+                {
+                    int cdol1len= getDOLlength(CDOL1,0,CDOL1.length);
+                    cdol1Data=new byte[cdol1len];
+                    fillDOL(CDOL1,0,CDOL1.length,cdol1Data,0);  // Prepare DOL for Generate AC
 
+                    byte [] generateAcApdu=BinaryTools.catenate(new byte[][]{ // Generate AC
+                            new byte[]{(byte)0x80,(byte)0xae,0x50,0x00,(byte)cdol1Data.length}, // CLA INS P1 P2 LC
+                            cdol1Data, // DATA
+                            new byte[]{0} // LE
+                    });
+
+                    resp=reader.transceive(generateAcApdu);
+
+                    if ((resp!=null)&&(resp.length>2))
+                    {
+                        ReadPDO pdo=new ReadPDO();
+
+                        result=parse(pdo,resp,0,resp.length-2);
+
+                    }
+                }
+                else
+                {
+                    result=false;  // No CDOL1, no application cryptogram... giving up !
+                }
+            }
 
             return result;
         }
@@ -540,7 +591,7 @@ public class EMVReader
         while (b && (len > 0))
         {
             Log.i(getClass().getName(),Hex.encode(data,0,data.length));
-            Log.i(getClass().getName(),(new String(new char[offset]).replace("\0", " "))+"^");
+            Log.i(getClass().getName(),(new String(new char[offset]).replace("\0", "  "))+"^");
             int tagLen=getTagLen(data,offset,len);
             
             if (tagLen < 1) break;
@@ -600,7 +651,7 @@ public class EMVReader
         }
     }
 
-    int getPDOLlength(byte[] PDOL, int offset, int len) 
+    int getDOLlength(byte[] PDOL, int offset, int len)
     {
         int tot=0;
         
@@ -624,7 +675,7 @@ public class EMVReader
         return tot;
     }
     
-    void fillPDOL(byte[] PDOL, int offset, int len, byte[] pdolData, int i) 
+    void fillDOL(byte[] PDOL, int offset, int len, byte[] pdolData, int i)
     {
         while (len > 0)
         {
@@ -641,6 +692,8 @@ public class EMVReader
 //            System.out.println(String.format("PDOL %04X,%d",tag,actLen));
 
             // Fills if known - otherwise binary zeroes will fill the tag
+            Log.d(getClass().getName(),"Filling PDOL, i="+i+" - actlen="+actLen+" -  tag "+String.format("PDOL %04X,%d",tag,actLen));
+
             switch (tag)
             {
                 case 0x9F1A:    /* country code */
@@ -711,7 +764,9 @@ public class EMVReader
                         System.arraycopy(BinaryTools.toBin(txType),0,pdolData,i,1);
                     }
                     break;
-
+                default:
+                    Log.e(getClass().getName(),"Unknown tag requested by card - filling zeroes for tag "+Hex.encode(new byte[]{(byte)(tag>>8),(byte)(tag&0xff)},0,2));
+                    break;
             }
             
             i+=actLen;
@@ -736,6 +791,12 @@ public class EMVReader
     boolean readAtc(byte[] data,int offset,int len)
     {
         atc=Hex.encode(data,offset,len);
+        return true;
+    }
+
+    boolean readIAD(byte[] data,int offset,int len)
+    {
+        iad=Hex.encode(data,offset,len);
         return true;
     }
 
@@ -776,21 +837,20 @@ public class EMVReader
     boolean readAFL(byte [] data,int offset,int len) throws IOException
     {
         boolean result=true;
-        
+
+        afl=new ArrayList<AflRecord>();
+
         while (result && (len > 0))
         {
-            byte sfi=data[offset++];
-            byte firstRec=data[offset++];
-            byte lastRec=data[offset++];
-            byte authNum=data[offset++];
-            
-            while (result && (firstRec <= lastRec))
-            {
-                result=readRecord((byte)(0x1f & (sfi>>3)),firstRec);
-                
-                firstRec++;
-            }
-            
+            // Reading all SFI records has been moved after GPO is completely parsed - here we just store all AFL records
+            AflRecord aflRecord=new AflRecord();
+            aflRecord.sfi=data[offset++];
+            aflRecord.firstrec=data[offset++];
+            aflRecord.lastrec=data[offset++];
+            aflRecord.nrrecforxda=data[offset++];
+
+            afl.add(aflRecord);
+
             len-=4;
         }
         
@@ -800,7 +860,7 @@ public class EMVReader
     class ReadRecordData implements EnumCallback
     {
         @Override
-        public boolean found(int tag, int len, byte[] data, int offset) throws IOException 
+        public boolean found(int tag, int len, byte[] data, int offset) throws IOException
         {
             boolean result=true;
                         
@@ -812,15 +872,35 @@ public class EMVReader
                     break;
                 case 0x5A:
                     pan=Hex.encode(data, offset, len);
-                    result=(expiryMonth==null);
-
+                    // result=(expiryMonth==null); // don't stop treatment
                     break;
                 case 0x5F24:
                     expiryMonth=Integer.parseInt(String.format("%x",data[offset+1]));
                     expiryYear=Integer.parseInt(String.format("%x",data[offset]));
-                    result=(pan==null);
-
+                    // result=(pan==null); // don't stop treatment
                     break;
+                case 0x5F20:
+                    cardholderName=new String(data,offset,len, Charset.forName("ISO8859-1"));
+                    result=true;
+                    break;
+                case 0x8C:
+                    // Read CDOL1 - example
+                    //9F02.06 9F03.06 9F1A.02 95.05 5F2A.02 9A.03 9C.01 9F37.04 9F35.01 9F45.02 9F4C.08 9F34.03
+                    CDOL1=BinaryTools.bytesFrom(data,offset, len);
+                    break;
+                // Todo
+                // 8F - CA PK Index
+                // 9F32 - Issuer PK exponent
+                // 92 - Issuer PK remainder
+                // 90 - Issuer PK certificate
+                // 93 - Signed static application data
+                // 9F47 - ICC public key exponent
+                // 9F48 - ICC public key remainder
+                // 9F46 - ICC public key certificate
+                // 5F25 - application effective date
+                // 5F28 - issuer country code
+                // 5F34 - Pan sequence number
+                // 9F35, 9F4C, 9F21, 9F7C, 9F45, 9F34
             }
                        
             return result;
@@ -951,101 +1031,5 @@ public class EMVReader
         return sb.toString();
     }
 
-    /** from PDOL string builds a valid TLV structure containing all necessary data **/
-    private byte[] xxxbuildTerminalData(byte[] pdol)
-    {
-        byte[] candidate;
-        String candidateString;
-        int len=0;
-        byte[] value;
-        ByteArrayOutputStream ret=new ByteArrayOutputStream();
-
-        for(int i=0;i<pdol.length;)
-        {
-            // try one digit tag
-            candidate=new byte[]{pdol[i]};
-            candidateString=BinaryTools.toHex(candidate);
-            Log.d(getClass().getName(),"Trying "+candidateString);
-
-            if(TERMINALTAGS.contains(candidateString))
-            { // found a 1-byte tag
-                len=(int)pdol[i+1];
-                i+=2;
-            }
-            else {
-                // try two digits tag
-                candidate = new byte[]{pdol[i], pdol[i + 1]};
-                candidateString=BinaryTools.toHex(candidate);
-                Log.d(getClass().getName(),"Trying "+candidateString);
-
-                if(TERMINALTAGS.contains(candidateString))
-                { // found a 2-bytes tag
-                    len=(int)pdol[i+2];
-                    i+=3;
-                }
-                else candidate=null; // not found
-            }
-
-            // candidate and candidateString contains tag, len contain length
-            if(candidate==null)
-            {
-                Log.w(getClass().getName(),"Could not parse PDOL - unknown tag on position "+i+" : "+BinaryTools.toHex(pdol));
-                //cardPdol.setText("Error: "+"Could not parse PDOL - unknown tag on position "+i+" : "+BinaryTools.toHex(pdol));
-                return null;
-            }
-            if(len>64||len<=0)
-            {
-                Log.w(getClass().getName(),"Could not parse PDOL - Strange length "+len+" fond before index "+i+" on PDOL data : "+BinaryTools.toHex(pdol));
-                //cardPdol.setText("Error: "+"Could not parse PDOL - Strange length "+len+" found before index "+i+" on PDOL data : "+BinaryTools.toHex(pdol));
-                return null;
-            }
-
-            value=new byte[len];
-            switch(candidateString)
-            {
-                case "9f66":
-                    System.arraycopy(BinaryTools.toBin(ttq),0,value,0,len);
-                    break;
-                case "9f02":
-                    System.arraycopy(BinaryTools.toBin(amount),0,value,0,len);
-                    break;
-                case "9f03":
-                    System.arraycopy(BinaryTools.toBin(amountOther),0,value,0,len);
-                    break;
-                case "9f1a":
-                    System.arraycopy(BinaryTools.toBin(terminalCountryCode),0,value,0,len);
-                    break;
-                case "95":
-                    System.arraycopy(BinaryTools.toBin(tvr),0,value,0,len);
-                    break;
-                case "5f2a":
-                    System.arraycopy(BinaryTools.toBin(curcy),0,value,0,len);
-                    break;
-                case "9a":
-                    System.arraycopy(BinaryTools.toBin(txDate),0,value,0,len);
-                    break;
-                case "9c":
-                    System.arraycopy(BinaryTools.toBin(txType),0,value,0,len);
-                    break;
-                case "9f37":
-                    System.arraycopy(BinaryTools.toBin(unpredicatableNumber),0,value,0,len);
-                    break;
-                default:
-                    Log.i(getClass().getName(),"Unknown tag "+candidateString+" - filling with zeroes");
-            }
-
-            try {
-                ret.write(candidate);
-                ret.write(new byte[]{(byte)len});
-                ret.write(value);
-            }
-            catch(Exception e)
-            {
-                Log.e(getClass().getName(),"Caught Exception while building from PDOL",e);
-            }
-
-        }
-        return ret.toByteArray();
-    }
 
 }
