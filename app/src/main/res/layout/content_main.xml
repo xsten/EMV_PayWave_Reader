@@ -64,14 +64,7 @@
         android:layout_marginTop="12dp"
         android:text="@string/decision" />
 
-    <Button
-        android:id="@+id/button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="46dp"
-        android:text="@string/setTerminalTags" />
+
 
     <TextView
         android:id="@+id/Certificate"
@@ -92,6 +85,27 @@
         android:layout_below="@+id/Certificate"
         android:layout_marginTop="11dp"
         android:text="@string/Atc" />
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginLeft="27dp"
+        android:layout_marginBottom="38dp"
+        android:text="@string/setTerminalTags" />
+
+    <Button
+        android:id="@+id/button3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/button"
+        android:layout_alignBottom="@+id/button"
+        android:layout_marginLeft="34dp"
+        android:layout_marginStart="34dp"
+        android:layout_toEndOf="@+id/button"
+        android:layout_toRightOf="@+id/button"
+        android:text="@string/send_by_email" />
 
 </RelativeLayout>
 

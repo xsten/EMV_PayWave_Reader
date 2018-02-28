@@ -29,6 +29,7 @@ import android.util.Log;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -56,9 +57,19 @@ public class EMVReader
     public String iad=null;
     public byte [] aid;
     public String issuer;
-    byte [] PDOL;
-    byte [] CDOL1;
+    public String rid;
+    public String capk_index;
+    public String issuer_pk_encrypted_certificate;
+    public String issuer_pk_remainder;
+    public String issuer_pk_exponent;
+    public String icc_pk_encrypted;
+    public String icc_pk_remainder;
+    public String icc_pk_exponent;
+    public String sdad_encrypted;
+    public String aip;
 
+    public byte [] PDOL;
+    public byte [] CDOL1;
     private String ttq="68000000";
     private String amount="000000000010";
     private String amountOther="000000000000";
@@ -194,7 +205,9 @@ public class EMVReader
                 case 0x57:
                     result=readTrack2Equivalent(data,offset,len);
                     break;
-                // If we encapsulate the calls, the treatment of tag 77 will be interrupted, and we will never get 9F27
+                case 0x82:
+                    aip=Hex.encode(data,offset,len);
+                    break;
                 case 0x94:
                     result=readAFL(data,offset,len);
                     break;
@@ -202,8 +215,10 @@ public class EMVReader
                     result=readCryptogramInformationData(data,offset,len);
                     break;
                 case 0x9F26:
-                case 0x9F4B:
                     result=readApplicationCryptogram(data,offset,len);
+                    break;
+                case 0x9F4B:
+                    sdad_encrypted=Hex.encode(data,offset,len);
                     break;
                 case 0x9F36:
                     result=readAtc(data,offset,len);
@@ -428,6 +443,15 @@ public class EMVReader
             switch (tag)
             {
                 case 0x4F:
+                    if(EmvKeys.getInstance().getBrand(rid,capk_index)==null)
+                    { // rid is not known or wrong - give it another try
+                        rid=Hex.encode(data,offset,len).substring(0,10);
+                    }
+                    else
+                    {
+                        Log.e(getClass().getName(),"Cowardly refusing to override rid "+rid);
+                    }
+                    Log.i(getClass().getName(),"rid="+rid);
                     aid=BinaryTools.bytesFrom(data,offset, len);
                     break;
                 case 0x50:
@@ -620,7 +644,8 @@ public class EMVReader
         
         return b;
     }
-    
+
+    // Entry point
     public void read(String ttq,String amount,String amountOther,String terminalCountryCode,String tvr,String curcy,String txDate,String txType,String unpredicatableNumber) throws IOException
     {
         this.ttq=ttq;
@@ -649,6 +674,14 @@ public class EMVReader
         {
             parse(new ReadPPSE(),ppse,0,ppse.length-2);
         }
+
+        // All APDU work is done - but we may have to decrypt SDAD now (mastercard)
+        if(applicationCryptogram==null && sdad_encrypted!=null)
+        {
+            decrypt_sdad();
+        }
+
+        Log.e(getClass().getName(),"FINISHED !!!!!!!!!");
     }
 
     int getDOLlength(byte[] PDOL, int offset, int len)
@@ -867,12 +900,13 @@ public class EMVReader
             switch (tag)
             {
                 case 0x57:
-                case 0x9f6b:
+                // case 0x9f6b:
                     result=readTrack2Equivalent(data,offset,len);
                     break;
                 case 0x5A:
                     pan=Hex.encode(data, offset, len);
-                    // result=(expiryMonth==null); // don't stop treatment
+                    if(pan.endsWith("F")) // padding because of odd size
+                        pan=pan.substring(0,pan.length()-1);
                     break;
                 case 0x5F24:
                     expiryMonth=Integer.parseInt(String.format("%x",data[offset+1]));
@@ -888,19 +922,41 @@ public class EMVReader
                     //9F02.06 9F03.06 9F1A.02 95.05 5F2A.02 9A.03 9C.01 9F37.04 9F35.01 9F45.02 9F4C.08 9F34.03
                     CDOL1=BinaryTools.bytesFrom(data,offset, len);
                     break;
+                case 0x8F:
+                    capk_index=Hex.encode(data,offset, len);
+                    break;
+                case 0x9F32:
+                    issuer_pk_exponent=Hex.encode(data,offset,len);
+                    break;
+                case 0x92:
+                    issuer_pk_remainder=Hex.encode(data,offset,len);
+                    break;
+                case 0x90:
+                    issuer_pk_encrypted_certificate=Hex.encode(data,offset,len);
+                    break;
+                case 0x9F47:
+                    icc_pk_exponent=Hex.encode(data,offset,len);
+                    break;
+                case 0x9F48:
+                    icc_pk_remainder=Hex.encode(data,offset,len);
+                    break;
+                case 0x9F46:
+                    icc_pk_encrypted=Hex.encode(data,offset,len);
+                    break;
+                case 0x9F4B:
+                    sdad_encrypted=Hex.encode(data,offset,len);
+                    break;
                 // Todo
-                // 8F - CA PK Index
-                // 9F32 - Issuer PK exponent
-                // 92 - Issuer PK remainder
-                // 90 - Issuer PK certificate
+
+
                 // 93 - Signed static application data
-                // 9F47 - ICC public key exponent
-                // 9F48 - ICC public key remainder
-                // 9F46 - ICC public key certificate
                 // 5F25 - application effective date
                 // 5F28 - issuer country code
                 // 5F34 - Pan sequence number
-                // 9F35, 9F4C, 9F21, 9F7C, 9F45, 9F34
+                // 9F35 - Terminal Type
+                // 9F45 - Data authentication code
+                // 9F4C - ICC Dynamic Number (?)
+                // , 9F21, 9F7C, 9F45, 9F34
             }
                        
             return result;
@@ -1031,5 +1087,89 @@ public class EMVReader
         return sb.toString();
     }
 
+    private void decrypt_sdad()
+    {
+        EmvKeys cakeys=EmvKeys.getInstance();
+        if(cakeys.getBrand(rid,capk_index)==null)
+        {
+            Log.e(getClass().getName(),"Could not find a public key matching "+rid+"/"+capk_index);
+            return;
+        }
+        BigInteger modulo=new BigInteger(cakeys.getModulo(rid,capk_index),16); // from CAPK table
+        BigInteger encrypted=new BigInteger(issuer_pk_encrypted_certificate,16);
+        BigInteger expo=new BigInteger(cakeys.getExponent(rid,capk_index)); // from CAPK table
+        BigInteger result=encrypted.modPow(expo, modulo);
+        String issuer_data_decrypted=result.toString(16);
+        if(!(issuer_data_decrypted.startsWith("6a")))
+        {
+            Log.e(getClass().getName(),"Header error after decryption of issuer_data : "+issuer_data_decrypted);
+            return;
+        }
+        String issuer_id=issuer_data_decrypted.substring(4,12);
+        String cert_exp=issuer_data_decrypted.substring(12,16);
+        String cert_serial_nr=issuer_data_decrypted.substring(16,22);
+        String hash_algorithm_indicator=issuer_data_decrypted.substring(22,24);
+        String issuer_pk_algorithm_indicator=issuer_data_decrypted.substring(24,26);
+        String issuer_pk_mod_length=issuer_data_decrypted.substring(26,28);
+        String issuer_pk_exp_length=issuer_data_decrypted.substring(28,30);
+        int nca=cakeys.getModulo(rid,capk_index).length()/2;
+        String issuer_pk_mod_part=issuer_data_decrypted.substring(30,30+(nca-36)*2);
+        String hash_result=issuer_data_decrypted.substring(30+nca-36,30+(nca-36)*2+40);
+
+        String issuer_pk_mod=issuer_pk_mod_part+issuer_pk_remainder;
+
+        // Decrypts ICC PK
+        modulo=new BigInteger(issuer_pk_mod,16);
+        encrypted=new BigInteger(icc_pk_encrypted,16);
+        expo=new BigInteger(issuer_pk_exponent,16);
+        result=encrypted.modPow(expo, modulo);
+
+        String icc_data_decrypted=result.toString(16);
+        if(!(icc_data_decrypted.startsWith("6a")))
+        {
+            Log.e(getClass().getName(),"Header error after decryption of icc_data : "+icc_data_decrypted);
+            return;
+        }
+        String application_pan=icc_data_decrypted.substring(4,24);
+        String icc_cert_exp_date=icc_data_decrypted.substring(24,28);
+        String icc_cert_ser_nr=icc_data_decrypted.substring(28,34);
+        String icc_hash_algo_ind=icc_data_decrypted.substring(34,36);
+        String icc_pk_algo_ind=icc_data_decrypted.substring(36,38);
+        String icc_pk_mod_length=icc_data_decrypted.substring(38,40);
+        String icc_pk_exp_length=icc_data_decrypted.substring(40,42);
+        int ni=issuer_pk_mod.length()/2;
+        int iccmodlen=Integer.parseInt(icc_pk_mod_length,16);
+        String icc_pk_mod;
+
+        if(iccmodlen>=(ni-42)) { // there is a remainder
+            String icc_pk_mod_part = icc_data_decrypted.substring(42, 42 + (ni - 42) * 2);
+            icc_pk_mod = icc_pk_mod_part + icc_pk_remainder;
+        }
+        else
+        {
+            icc_pk_mod=icc_data_decrypted.substring(42,42+iccmodlen*2);
+        }
+        // Decrypts SDAD data !!!
+        modulo=new BigInteger(icc_pk_mod,16);
+        encrypted=new BigInteger(sdad_encrypted,16);
+        expo=new BigInteger(icc_pk_exponent,16);
+        result=encrypted.modPow(expo, modulo);
+
+
+        String sdad_data_decrypted=result.toString(16);
+        if(!(sdad_data_decrypted.startsWith("6a")))
+        {
+            Log.e(getClass().getName(),"Header error after decryption of sdad_data : "+sdad_data_decrypted);
+            return;
+        }
+        String sdad_hash_algo_ind=sdad_data_decrypted.substring(4,6);
+        String sdad_data_length=sdad_data_decrypted.substring(6,8);
+        int ldd=Integer.parseInt(sdad_data_length,16);
+        String sdad_data=sdad_data_decrypted.substring(8,8+ldd*2);
+
+        System.out.println(sdad_data);
+        applicationCryptogram=sdad_data.substring(20,36);
+
+    }
 
 }

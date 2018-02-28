@@ -16,4 +16,5 @@
     <string name="message_nfc_off">Please enable NFC and restart the app</string>
     <string name="message_ui_updated">Card read complete</string>
     <string name="message_read_error">Error: Please rescan your card</string>
+    <string name="send_by_email">Send By Email</string>
 </resources>
