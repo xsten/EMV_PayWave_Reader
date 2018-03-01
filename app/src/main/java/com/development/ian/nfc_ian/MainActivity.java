@@ -82,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
             {
                 Intent intent=new Intent(Intent.ACTION_SEND);
                 intent.setType("text/html");
-                intent.putExtra(Intent.EXTRA_EMAIL,"xavier.stenuit@six-group.com");
+                // intent.putExtra(Intent.EXTRA_EMAIL,"xavier.stenuit@six-group.com");
                 intent.putExtra(Intent.EXTRA_SUBJECT,"EMV Transaction "+new Date());
                 String msg="";
                 msg+="cardNumber:"+cardNumber+"\n";
@@ -224,7 +224,7 @@ public class MainActivity extends AppCompatActivity {
     protected void updateEMVReader(EMVReader reader){
         //Verify all information needed is present
         if(reader == null || reader.issuer == null || reader.expiryYear == null ||
-                reader.expiryMonth == null || reader.pan == null || reader.PDOL==null){
+                reader.expiryMonth == null || reader.pan == null ){
             displayError();
         }else {
 

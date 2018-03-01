@@ -681,7 +681,8 @@ public class EMVReader
             decrypt_sdad();
         }
 
-        Log.e(getClass().getName(),"FINISHED !!!!!!!!!");
+        Log.i(getClass().getName(),"FINISHED !!!!!!!!!");
+        return;
     }
 
     int getDOLlength(byte[] PDOL, int offset, int len)
@@ -1167,9 +1168,9 @@ public class EMVReader
         int ldd=Integer.parseInt(sdad_data_length,16);
         String sdad_data=sdad_data_decrypted.substring(8,8+ldd*2);
 
-        System.out.println(sdad_data);
+        Log.i(getClass().getName(),"sdad_data:"+sdad_data);
         applicationCryptogram=sdad_data.substring(20,36);
-
+        Log.i(getClass().getName(),"application Cryptogram:"+applicationCryptogram);
     }
 
 }

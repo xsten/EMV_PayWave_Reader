@@ -2,6 +2,8 @@ package com.development.ian.nfc_ian;
 
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.util.Log;
+
 import java.io.IOException;
 
 //AsyncCardRead starts an asynchronous task to process responses and carry out card IO
@@ -101,15 +103,15 @@ public class AsyncCardRead extends AsyncTask<Intent, Void, EMVReader> {
     protected EMVReader doInBackground(Intent... intents) {
         Intent intent = intents[0];
         PaywaveHandler paywaveHandler = new PaywaveHandler(intent);
-        EMVReader emvReader;
+        EMVReader emvReader=null;
 
         try {
             emvReader = new EMVReader(paywaveHandler, null, paywaveHandler.transceive(EMVReader.SELECT_PPSE));
             emvReader.read(ttq,amount,amountOther,terminalCountryCode,tvr,curcy,txDate,txType,unpredicatableNumber);
             return emvReader;
         } catch (IOException e) {
-            e.printStackTrace();
-            return null;
+            Log.e(getClass().getName(),"Exception caught :",e);
+            return emvReader;
         }
     }
 
