@@ -798,6 +798,12 @@ public class EMVReader
                         System.arraycopy(BinaryTools.toBin(txType),0,pdolData,i,1);
                     }
                     break;
+                case 0x9f35:
+                    if(actLen==1)
+                    {
+                        pdolData[i]=0x23;  // attended, offline only
+                    }
+                    break;
                 default:
                     Log.e(getClass().getName(),"Unknown tag requested by card - filling zeroes for tag "+Hex.encode(new byte[]{(byte)(tag>>8),(byte)(tag&0xff)},0,2));
                     break;
@@ -947,6 +953,7 @@ public class EMVReader
                 case 0x9F4B:
                     sdad_encrypted=Hex.encode(data,offset,len);
                     break;
+
                 // Todo
 
 
