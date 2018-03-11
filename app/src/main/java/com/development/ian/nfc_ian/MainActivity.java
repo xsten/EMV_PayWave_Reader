@@ -25,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
     private MainActivity instance;
 
     // Input tags
-    private String ttq="68000000";
+    private String ttq="33000000";
     private String amount="000000000010";
     private String amountOther="000000000000";
     private String terminalCountryCode="0250";
@@ -34,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
     private String txDate="180207";
     private String txType="00";
     private String unpredicatableNumber="CAFEBABE";
+    private String terminalType="23";
 
     // Output tags
     private String cardNumber;
@@ -69,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
                 intent.putExtra("txDate",txDate);
                 intent.putExtra("txType",txType);
                 intent.putExtra("unpredicatableNumber",unpredicatableNumber);
+                intent.putExtra("terminalType",terminalType);
 
                 // startActivity(intent);
                 startActivityForResult(intent,0);
@@ -143,6 +145,7 @@ public class MainActivity extends AppCompatActivity {
             txDate=data.getStringExtra("txDate");
             txType=data.getStringExtra("txType");
             unpredicatableNumber=data.getStringExtra("unpredicatableNumber");
+            terminalType=data.getStringExtra("terminalType");
 
         }
     }
@@ -189,7 +192,7 @@ public class MainActivity extends AppCompatActivity {
         asyncCardRead.setTxDate(txDate);
         asyncCardRead.setTxType(txType);
         asyncCardRead.setUnpredicatableNumber(unpredicatableNumber);
-
+        asyncCardRead.setTerminalType(terminalType);
         asyncCardRead.execute(intent);
     }
 

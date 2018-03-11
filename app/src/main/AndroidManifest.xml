@@ -28,7 +28,17 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".SetTerminalTags"></activity>
+        <activity android:name=".SetTerminalTags" />
+        <activity
+            android:name=".SetTerminalType"
+            android:label="@string/title_activity_set_terminal_type"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".set_date" />
+        <activity android:name=".set_transaction_type" />
+        <activity android:name=".set_tvr" />
+        <activity android:name=".set_ttq" />
+        <activity android:name=".set_amount_currency" />
+        <activity android:name=".set_country"></activity>
     </application>
 
 </manifest>

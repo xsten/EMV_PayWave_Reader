@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.development.ian.nfc_ian.set_country">
+
+    <RadioGroup
+        android:id="@+id/CountryRadioGroup"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RadioButton
+            android:id="@+id/France"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="France"
+            android:checked="true"
+            />
+
+        <RadioButton
+            android:id="@+id/Belgium"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Belgium"
+            />
+        <RadioButton
+            android:id="@+id/Germany"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Germany"
+            />
+        <RadioButton
+            android:id="@+id/Switserland"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Switserland"
+            />
+        <RadioButton
+            android:id="@+id/UK"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="UK"
+            />
+        <RadioButton
+            android:id="@+id/Netherlands"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Netherlands"
+            />
+        <RadioButton
+            android:id="@+id/USA"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="USA"
+            />
+    </RadioGroup>
+
+    <Button
+        android:id="@+id/set_country_OK"
+        android:layout_width="120dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:text="OK"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/set_country_Cancel"
+        android:layout_width="120dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:text="Cancel"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+</android.support.constraint.ConstraintLayout>

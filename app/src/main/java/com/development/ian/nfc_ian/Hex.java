@@ -57,6 +57,7 @@ public class Hex
 
     public static byte[] decode(String s)
     {
+        if(s==null) return null;
         byte[] a = new byte[s.length() >> 1];
         int i = 0;
         int o = 0;
@@ -76,6 +77,7 @@ public class Hex
                 }
                 o++;
             }
+            else return null;
         }
 
         if (0==(o & 1))

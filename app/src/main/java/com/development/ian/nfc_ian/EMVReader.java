@@ -78,7 +78,8 @@ public class EMVReader
     private String curcy="0978";
     private String txDate="180207";
     private String txType="00";
-    private String unpredicatableNumber="CAFEBABE";
+    private String unpredicatableNumber;
+    private String terminalType;
 
     public static final byte [] SELECT_PPSE={
         0x00,(byte)0xA4,0x04,0x00,0x0E,
@@ -646,7 +647,7 @@ public class EMVReader
     }
 
     // Entry point
-    public void read(String ttq,String amount,String amountOther,String terminalCountryCode,String tvr,String curcy,String txDate,String txType,String unpredicatableNumber) throws IOException
+    public void read(String ttq,String amount,String amountOther,String terminalCountryCode,String tvr,String curcy,String txDate,String txType,String unpredicatableNumber,String terminalType) throws IOException
     {
         this.ttq=ttq;
         this.amount=amount;
@@ -657,6 +658,7 @@ public class EMVReader
         this.txDate=txDate;
         this.txType=txType;
         this.unpredicatableNumber=unpredicatableNumber;
+        this.terminalType=terminalType;
 
 
         byte [] ppse=adf;
@@ -801,7 +803,8 @@ public class EMVReader
                 case 0x9f35:
                     if(actLen==1)
                     {
-                        pdolData[i]=0x23;  // attended, offline only
+                        System.arraycopy(BinaryTools.toBin(terminalType),0,pdolData,i,1);
+                        // pdolData[i]=0x23;  // attended, offline only
                     }
                     break;
                 default:

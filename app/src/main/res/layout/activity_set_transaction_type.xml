@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.development.ian.nfc_ian.set_transaction_type">
+
+    <RadioGroup
+        android:id="@+id/transactionTypeRadio"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RadioButton
+            android:id="@+id/good_and_services"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Authorization - Good and Services"
+            android:checked="true"
+            />
+        <RadioButton
+            android:id="@+id/cash"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Cash (ATM)"
+            />
+        <RadioButton
+            android:id="@+id/debit_adjusment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Debit Adjustment"
+            />
+        <RadioButton
+            android:id="@+id/refund"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Refund"
+            />
+        <RadioButton
+            android:id="@+id/available_funds_inquiry"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Available funds inquiry"
+            />
+        <RadioButton
+            android:id="@+id/balance_inquiry"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Balance Inquiry"
+            />
+        <RadioButton
+            android:id="@+id/payment_from_account"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Payment from account"
+            />
+        <RadioButton
+            android:id="@+id/payment_to_account"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Payment to account"
+            />
+    </RadioGroup>
+
+    <Button
+        android:id="@+id/setTransactionTypeOK"
+        android:layout_width="120dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:text="OK"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/setTransactionTypeCancel"
+        android:layout_width="120dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:text="Cancel"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+</android.support.constraint.ConstraintLayout>

@@ -18,7 +18,8 @@ public class AsyncCardRead extends AsyncTask<Intent, Void, EMVReader> {
     private String curcy="0978";
     private String txDate="180207";
     private String txType="00";
-    private String unpredicatableNumber="CAFEBABE";
+    private String unpredicatableNumber;
+    private String terminalType;
 
     public String getTtq() {
         return ttq;
@@ -91,7 +92,9 @@ public class AsyncCardRead extends AsyncTask<Intent, Void, EMVReader> {
     public void setUnpredicatableNumber(String unpredicatableNumber) {
         this.unpredicatableNumber = unpredicatableNumber;
     }
-
+    public void setTerminalType(String terminalType) {
+        this.terminalType=terminalType;
+    }
 
 
     protected AsyncCardRead(MainActivity mainActivity){
@@ -107,7 +110,7 @@ public class AsyncCardRead extends AsyncTask<Intent, Void, EMVReader> {
 
         try {
             emvReader = new EMVReader(paywaveHandler, null, paywaveHandler.transceive(EMVReader.SELECT_PPSE));
-            emvReader.read(ttq,amount,amountOther,terminalCountryCode,tvr,curcy,txDate,txType,unpredicatableNumber);
+            emvReader.read(ttq,amount,amountOther,terminalCountryCode,tvr,curcy,txDate,txType,unpredicatableNumber,terminalType);
             return emvReader;
         } catch (IOException e) {
             Log.e(getClass().getName(),"Exception caught :",e);

@@ -1,10 +1,132 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+<android.support.constraint.ConstraintLayout
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.development.ian.nfc_ian.SetTerminalTags">
+
+
+    <Button
+        android:id="@+id/UNButton"
+        android:layout_width="48dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginStart="8dp"
+        android:text="@string/ThreeDots"
+        app:layout_constraintBaseline_toBaselineOf="@+id/UnpredictableNumber_field"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/UnpredictableNumber_field" />
+
+    <Button
+        android:id="@+id/TerminalTypeButton"
+        android:layout_width="48dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginStart="8dp"
+        android:text="@string/ThreeDots"
+        app:layout_constraintBaseline_toBaselineOf="@+id/TerminalType_field"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/TerminalType_field" />
+
+    <Button
+        android:id="@+id/TXTypeButton"
+        android:layout_width="48dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginStart="8dp"
+        android:text="@string/ThreeDots"
+        app:layout_constraintBaseline_toBaselineOf="@+id/TransactionType_field"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/TransactionType_field" />
+
+    <Button
+        android:id="@+id/TXDateButton"
+        android:layout_width="48dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginStart="8dp"
+        android:text="@string/ThreeDots"
+        app:layout_constraintBaseline_toBaselineOf="@+id/TransactionDate_field"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/TransactionDate_field" />
+
+    <Button
+        android:id="@+id/CurrencyButton"
+        android:layout_width="48dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginStart="8dp"
+        android:text="@string/ThreeDots"
+        app:layout_constraintBaseline_toBaselineOf="@+id/Currency_field"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/Currency_field" />
+
+    <Button
+        android:id="@+id/TVRButton"
+        android:layout_width="48dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginStart="8dp"
+        android:text="@string/ThreeDots"
+        app:layout_constraintBaseline_toBaselineOf="@+id/TVR_field"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/TVR_field" />
+
+    <Button
+        android:id="@+id/TCCButton"
+        android:layout_width="48dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginStart="8dp"
+        android:text="@string/ThreeDots"
+        app:layout_constraintBaseline_toBaselineOf="@+id/TerminalCountryCode_field"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/TerminalCountryCode_field" />
+
+    <Button
+        android:id="@+id/AmountOtherButton"
+        android:layout_width="48dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginStart="8dp"
+        android:text="@string/ThreeDots"
+        app:layout_constraintBaseline_toBaselineOf="@+id/AmountOther_field"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/AmountOther_field" />
+
+    <Button
+        android:id="@+id/AmountButton"
+        android:layout_width="48dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:text="@string/ThreeDots"
+        app:layout_constraintBaseline_toBaselineOf="@+id/Amount_field"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/Amount_field" />
 
     <TextView
         android:id="@+id/textView"
@@ -18,17 +140,14 @@
 
     <EditText
         android:id="@+id/TTQ_field"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
+
         android:ems="10"
         android:inputType="textPersonName"
-        android:text="68000000"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/textView"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:text="33000000"
+        app:layout_constraintEnd_toEndOf="@+id/Amount_field"
+        app:layout_constraintStart_toStartOf="@+id/Amount_field" />
 
     <TextView
         android:id="@+id/textView2"
@@ -42,16 +161,15 @@
 
     <EditText
         android:id="@+id/Amount_field"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
+
         android:layout_marginTop="8dp"
         android:ems="10"
         android:inputType="textPersonName"
         android:text="000000000010"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/textView2"
+        app:layout_constraintEnd_toEndOf="@+id/AmountOther_field"
+        app:layout_constraintStart_toStartOf="@+id/AmountOther_field"
         app:layout_constraintTop_toBottomOf="@+id/TTQ_field" />
 
     <TextView
@@ -66,16 +184,14 @@
 
     <EditText
         android:id="@+id/AmountOther_field"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:ems="10"
         android:inputType="textPersonName"
         android:text="000000000000"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/textView3"
+        app:layout_constraintEnd_toEndOf="@+id/TerminalCountryCode_field"
+        app:layout_constraintStart_toStartOf="@+id/TerminalCountryCode_field"
         app:layout_constraintTop_toBottomOf="@+id/Amount_field" />
 
     <TextView
@@ -90,16 +206,14 @@
 
     <EditText
         android:id="@+id/TerminalCountryCode_field"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:ems="10"
         android:inputType="textPersonName"
         android:text="0250"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/textView4"
+        app:layout_constraintEnd_toEndOf="@+id/TVR_field"
+        app:layout_constraintStart_toStartOf="@+id/TVR_field"
         app:layout_constraintTop_toBottomOf="@+id/AmountOther_field" />
 
     <TextView
@@ -114,16 +228,14 @@
 
     <EditText
         android:id="@+id/TVR_field"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:ems="10"
         android:inputType="textPersonName"
         android:text="0000000000"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/textView5"
+        app:layout_constraintEnd_toEndOf="@+id/Currency_field"
+        app:layout_constraintStart_toStartOf="@+id/Currency_field"
         app:layout_constraintTop_toBottomOf="@+id/TerminalCountryCode_field" />
 
     <TextView
@@ -138,16 +250,14 @@
 
     <EditText
         android:id="@+id/Currency_field"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:ems="10"
         android:inputType="textPersonName"
         android:text="0978"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/textView6"
+        app:layout_constraintEnd_toEndOf="@+id/TransactionDate_field"
+        app:layout_constraintStart_toStartOf="@+id/TransactionDate_field"
         app:layout_constraintTop_toBottomOf="@+id/TVR_field" />
 
     <TextView
@@ -162,16 +272,14 @@
 
     <EditText
         android:id="@+id/TransactionDate_field"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:ems="10"
         android:inputType="textPersonName"
         android:text="180207"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/textView7"
+        app:layout_constraintEnd_toEndOf="@+id/TransactionType_field"
+        app:layout_constraintStart_toStartOf="@+id/TransactionType_field"
         app:layout_constraintTop_toBottomOf="@+id/Currency_field" />
 
     <TextView
@@ -186,16 +294,16 @@
 
     <EditText
         android:id="@+id/TransactionType_field"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
+        android:layout_marginRight="8dp"
         android:layout_marginTop="8dp"
         android:ems="10"
         android:inputType="textPersonName"
         android:text="00"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/textView8"
+        app:layout_constraintEnd_toEndOf="@+id/UnpredictableNumber_field"
+        app:layout_constraintStart_toStartOf="@+id/UnpredictableNumber_field"
         app:layout_constraintTop_toBottomOf="@+id/TransactionDate_field" />
 
     <TextView
@@ -204,23 +312,47 @@
         android:layout_height="20dp"
         android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
+
         android:text="9F37 - UN"
         app:layout_constraintBaseline_toBaselineOf="@+id/UnpredictableNumber_field"
         app:layout_constraintStart_toStartOf="parent" />
 
     <EditText
         android:id="@+id/UnpredictableNumber_field"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
+        android:layout_marginRight="8dp"
         android:layout_marginTop="8dp"
         android:ems="10"
         android:inputType="textPersonName"
         android:text="CAFEBABE"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/textView9"
+        app:layout_constraintEnd_toEndOf="@+id/TerminalType_field"
+        app:layout_constraintStart_toStartOf="@+id/TerminalType_field"
         app:layout_constraintTop_toBottomOf="@+id/TransactionType_field" />
+
+    <TextView
+        android:id="@+id/textView10"
+        android:layout_width="wrap_content"
+        android:layout_height="20dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:text="9F35 - Term. Type"
+        app:layout_constraintBaseline_toBaselineOf="@+id/TerminalType_field"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <EditText
+        android:id="@+id/TerminalType_field"
+        android:layout_width="160dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="8dp"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:text="23"
+        app:layout_constraintStart_toEndOf="@+id/textView10"
+        app:layout_constraintTop_toBottomOf="@+id/UnpredictableNumber_field" />
 
     <Button
         android:id="@+id/button2"
@@ -228,10 +360,45 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="46dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="8dp"
         android:text="Set terminal tags"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/TerminalType_field" />
+
+    <Button
+        android:id="@+id/button4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="8dp"
+        android:text="@android:string/cancel"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/UnpredictableNumber_field" />
-        />
+        app:layout_constraintTop_toBottomOf="@+id/TerminalType_field" />
+
+    <Button
+        android:id="@+id/button6"
+        android:layout_width="48dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:text="@string/ThreeDots"
+        app:layout_constraintBaseline_toBaselineOf="@+id/TTQ_field"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/TTQ_field" />
+
+    <Button
+        android:id="@+id/TTQButton"
+        android:layout_width="48dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:text="@string/ThreeDots"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/TTQ_field"
+         />
 
 </android.support.constraint.ConstraintLayout>
+</ScrollView>

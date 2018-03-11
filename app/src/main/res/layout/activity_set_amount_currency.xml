@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.development.ian.nfc_ian.set_amount_currency">
+
+    <TextView
+        android:id="@+id/AmountTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:text="Amount"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/AmountTextField"
+        app:layout_constraintBaseline_toBaselineOf="@+id/AmountTextField"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/AmountTextField"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="8dp"
+        android:inputType="numberDecimal"
+
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <TextView
+        android:id="@+id/AmountOtherTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginLeft="16dp"
+        android:text="Amount, Other"
+        app:layout_constraintBaseline_toBaselineOf="@+id/AmountOtherTextField"
+        app:layout_constraintEnd_toStartOf="@+id/AmountOtherTextField"
+        app:layout_constraintLeft_toLeftOf="parent" />
+
+
+    <EditText
+        android:id="@+id/AmountOtherTextField"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="8dp"
+        android:inputType="numberDecimal"
+
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/AmountTextField" />
+
+    <RadioGroup
+        android:id="@+id/currencyRadioGroup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/AmountOtherTextField"
+        android:text="Currency">
+        <RadioButton
+            android:id="@+id/EUR"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="EUR"
+            />
+        <RadioButton
+            android:id="@+id/USD"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="USD"
+            />
+        <RadioButton
+            android:id="@+id/CHF"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="CHF"
+            />
+        <RadioButton
+            android:id="@+id/GBP"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="GBP"
+            />
+        <RadioButton
+            android:id="@+id/NOK"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="NOK"/>
+        <RadioButton
+            android:id="@+id/SEK"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="SEK"
+            />
+
+    </RadioGroup>
+
+    <Button
+        android:id="@+id/amount_currency_OK"
+        android:layout_width="120dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:text="OK"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/amount_currency_Cancel"
+        android:layout_width="120dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:text="Cancel"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+</android.support.constraint.ConstraintLayout>
