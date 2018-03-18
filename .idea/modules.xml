@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/NFC_Ian.iml" filepath="$PROJECT_DIR$/NFC_Ian.iml" />
+      <module fileurl="file://$PROJECT_DIR$/EMV_PayWave_Reader.iml" filepath="$PROJECT_DIR$/EMV_PayWave_Reader.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>
