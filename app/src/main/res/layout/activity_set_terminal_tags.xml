@@ -10,8 +10,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.development.ian.nfc_ian.SetTerminalTags">
-
+    tools:context="com.development.ian.nfc_ian.SetTerminalTags"
+    android:focusable="true"
+    android:focusableInTouchMode="true">
 
     <Button
         android:id="@+id/UNButton"
@@ -296,8 +297,8 @@
         android:id="@+id/TransactionType_field"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
+        android:layout_marginEnd="0dp"
+        android:layout_marginRight="0dp"
         android:layout_marginTop="8dp"
         android:ems="10"
         android:inputType="textPersonName"
@@ -321,8 +322,8 @@
         android:id="@+id/UnpredictableNumber_field"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
+        android:layout_marginEnd="0dp"
+        android:layout_marginRight="0dp"
         android:layout_marginTop="8dp"
         android:ems="10"
         android:inputType="textPersonName"
@@ -345,14 +346,51 @@
         android:id="@+id/TerminalType_field"
         android:layout_width="160dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
+        android:layout_marginStart="0dp"
+        android:layout_marginLeft="0dp"
         android:layout_marginTop="8dp"
         android:ems="10"
-        android:inputType="textPersonName"
+        android:inputType="text"
         android:text="23"
         app:layout_constraintStart_toEndOf="@+id/textView10"
         app:layout_constraintTop_toBottomOf="@+id/UnpredictableNumber_field" />
+
+    <TextView
+        android:id="@+id/textView11"
+        android:layout_width="wrap_content"
+        android:layout_height="20dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:text="Generate AC P1"
+        app:layout_constraintBaseline_toBaselineOf="@+id/GacP1"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <EditText
+        android:id="@+id/GacP1"
+        android:layout_width="160dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="0dp"
+        android:layout_marginLeft="0dp"
+        android:layout_marginTop="8dp"
+        android:ems="10"
+        android:inputType="text"
+        android:text="50"
+
+        app:layout_constraintLeft_toLeftOf="@+id/TerminalType_field"
+        app:layout_constraintTop_toBottomOf="@+id/TerminalType_field" />
+
+    <Button
+        android:id="@+id/GacP1Button"
+        android:layout_width="48dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:text="@string/ThreeDots"
+        app:layout_constraintBaseline_toBaselineOf="@+id/GacP1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/GacP1"
+        />
 
     <Button
         android:id="@+id/button2"
@@ -363,9 +401,9 @@
         android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
         android:layout_marginTop="8dp"
-        android:text="Set terminal tags"
+        android:text="OK"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/TerminalType_field" />
+        app:layout_constraintTop_toBottomOf="@+id/GacP1" />
 
     <Button
         android:id="@+id/button4"
@@ -376,7 +414,7 @@
         android:layout_marginTop="8dp"
         android:text="@android:string/cancel"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/TerminalType_field" />
+        app:layout_constraintTop_toBottomOf="@+id/GacP1" />
 
     <Button
         android:id="@+id/button6"
@@ -398,6 +436,7 @@
         android:text="@string/ThreeDots"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/TTQ_field"
+
          />
 
 </android.support.constraint.ConstraintLayout>

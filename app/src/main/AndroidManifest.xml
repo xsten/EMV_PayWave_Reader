@@ -8,7 +8,7 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/ic_launcher_round"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
@@ -38,7 +38,9 @@
         <activity android:name=".set_tvr" />
         <activity android:name=".set_ttq" />
         <activity android:name=".set_amount_currency" />
-        <activity android:name=".set_country"></activity>
+        <activity android:name=".set_country" />
+        <activity android:name=".set_gac_options" />
+        <activity android:name=".Credits"></activity>
     </application>
 
 </manifest>

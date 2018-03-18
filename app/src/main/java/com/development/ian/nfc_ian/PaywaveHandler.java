@@ -11,9 +11,18 @@ import java.io.IOException;
 
 //PaywaveHandler handles IO with the PayWave card
 public class PaywaveHandler implements EMVReader.CardReader {
+    private String apduLog="";
 
     private final IsoDep ISODEP;
 
+    public void resetApduLog()
+    {
+        apduLog="";
+    }
+    public String getApduLog()
+    {
+        return apduLog;
+    }
     protected PaywaveHandler(Intent intent){
         Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
         this.ISODEP = IsoDep.get(tag);
@@ -32,6 +41,7 @@ public class PaywaveHandler implements EMVReader.CardReader {
     public byte[] transceive(byte[] data) throws IOException {
         byte[] response= null;
         Log.e(getClass().getName(),"Sending:"+BinaryTools.toHex(data));
+        apduLog+="Sent:"+BinaryTools.toHex(data)+"\n";
         try {
             if(!ISODEP.isConnected()){
                 ISODEP.connect();
@@ -51,6 +61,7 @@ public class PaywaveHandler implements EMVReader.CardReader {
                 }
             }
             Log.e(getClass().getName(),"Received:"+BinaryTools.toHex(response));
+            apduLog+="Received:"+BinaryTools.toHex(response)+"\n";
             return response;
         } catch (IOException e) {
             e.printStackTrace();

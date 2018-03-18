@@ -67,6 +67,7 @@ public class EMVReader
     public String icc_pk_exponent;
     public String sdad_encrypted;
     public String aip;
+    public String apduLog;
 
     public byte [] PDOL;
     public byte [] CDOL1;
@@ -80,6 +81,8 @@ public class EMVReader
     private String txType="00";
     private String unpredicatableNumber;
     private String terminalType;
+    private String gacp1;
+    private ArrayList<ReadApplicationTemplate> applicationTemplates;
 
     public static final byte [] SELECT_PPSE={
         0x00,(byte)0xA4,0x04,0x00,0x0E,
@@ -164,6 +167,8 @@ public class EMVReader
 
     public interface CardReader
     {
+        public void resetApduLog();
+        public String getApduLog();
         public byte [] transceive(byte[] apdu) throws IOException;
     }
 
@@ -331,6 +336,7 @@ public class EMVReader
             }
 
             // AFL indicates everything that needs to be read on the card
+            // Now reads all necessary files
             Log.d(getClass().getName(),"Parse AFL");
             for(AflRecord aflRecord:afl) {
                 byte sfi = aflRecord.sfi;
@@ -345,20 +351,69 @@ public class EMVReader
                 }
             }
 
+            /*
+            { // DELETE - THIS IS A TEST
+                byte sfi = 8;
+                byte firstRec = 2;
+                byte lastRec = 2;
+                byte authNum = 0;
+
+                while (result && (firstRec <= lastRec)) {
+                    result = readRecord((byte) (0x1f & (sfi >> 3)), firstRec);
+
+                    firstRec++;
+                }
+            }
+*/
+
+            // Why not checking the Pin Try Counter ?
+            apdu=BinaryTools.catenate(new byte[][]{new byte[]{(byte)0x80,(byte)0xCA,(byte)0x9F,(byte)0x17},new byte[]{0}});
+            resp=reader.transceive(apdu);
+
+            // For DDA cards, SDAD is obtained with internal authenticate
+            // SDA cards don't do this
+            // CDA card combine internal authenticate with Generate AC
+            // VISA QVSDC cards already provided a cryptogram !
+
+
+            if(applicationCryptogram==null) {
+                Log.i(getClass().getName(), "Application cryptogram not yet generated - trying DDA internal authenticate ");
+                if (CDOL1 != null) {
+                    byte[] rndnr = new byte[4];
+                    rndnr=BinaryTools.toBin(unpredicatableNumber);
+                    byte[] generateAcApdu = BinaryTools.catenate(new byte[][]{ // Generate AC
+                            new byte[]{(byte)0x00,(byte)0x88,(byte)0x00,(byte)0x00, (byte) rndnr.length}, // CLA INS P1 P2 LC
+                            rndnr, // DATA
+                            new byte[]{0} // LE
+                    });
+
+                    resp = reader.transceive(generateAcApdu);
+
+                    if ((resp != null) && (resp.length > 2)) {
+                        ReadPDO pdo = new ReadPDO();
+
+                        result = parse(pdo, resp, 0, resp.length - 2);
+
+                    }
+                }
+            }
+
             // byte[] pdolWithData=buildTerminalData(PDOL);
             // Log.i(getClass().getName(),"PDOL data to send : "+BinaryTools.toHex(pdolWithData));
+
             byte[] cdol1Data;
             if(applicationCryptogram==null)
             {
-                Log.e(getClass().getName(),"Application cryptogram not yet generated (Mastercard ?) ");
+                Log.i(getClass().getName(),"Application cryptogram not yet generated Trying CDA ");
                 if (CDOL1!=null)
                 {
                     int cdol1len= getDOLlength(CDOL1,0,CDOL1.length);
                     cdol1Data=new byte[cdol1len];
                     fillDOL(CDOL1,0,CDOL1.length,cdol1Data,0);  // Prepare DOL for Generate AC
 
+                    byte p1=BinaryTools.toBin(gacp1)[0];
                     byte [] generateAcApdu=BinaryTools.catenate(new byte[][]{ // Generate AC
-                            new byte[]{(byte)0x80,(byte)0xae,0x50,0x00,(byte)cdol1Data.length}, // CLA INS P1 P2 LC
+                            new byte[]{(byte)0x80,(byte)0xae,p1,0x00,(byte)cdol1Data.length}, // CLA INS P1 P2 LC
                             cdol1Data, // DATA
                             new byte[]{0} // LE
                     });
@@ -434,6 +489,15 @@ public class EMVReader
     
     class ReadApplicationTemplate  implements EnumCallback
     {
+        private byte applicationPriorityIndicator;
+        public String rid;
+        public byte[] aid;
+        public String issuer;
+        public byte getApplicationPriorityIndicator()
+        {
+            return applicationPriorityIndicator;
+        }
+
         @Override
         public boolean found(int tag, int len, byte[] data, int offset) throws IOException 
         {
@@ -464,6 +528,9 @@ public class EMVReader
                     {
                         Logger.getLogger(EMVReader.class.getName()).log(Level.SEVERE, null, ex);
                     }
+                    break;
+                case 0x87:
+                    applicationPriorityIndicator=BinaryTools.bytesFrom(data,offset, len)[0];
                     break;
             }
             
@@ -514,7 +581,8 @@ public class EMVReader
                         
                         if (result)
                         {
-                            result=app.read();
+                            // result=app.read();
+                            applicationTemplates.add(app);  // delay reading of application templates - right now, we don't know which application is prioritary !
                         }
                     }
                     break;
@@ -647,7 +715,7 @@ public class EMVReader
     }
 
     // Entry point
-    public void read(String ttq,String amount,String amountOther,String terminalCountryCode,String tvr,String curcy,String txDate,String txType,String unpredicatableNumber,String terminalType) throws IOException
+    public void read(String ttq,String amount,String amountOther,String terminalCountryCode,String tvr,String curcy,String txDate,String txType,String unpredicatableNumber,String terminalType,String gacp1) throws IOException
     {
         this.ttq=ttq;
         this.amount=amount;
@@ -659,9 +727,12 @@ public class EMVReader
         this.txType=txType;
         this.unpredicatableNumber=unpredicatableNumber;
         this.terminalType=terminalType;
+        this.gacp1=gacp1;
 
 
         byte [] ppse=adf;
+        applicationTemplates=new ArrayList<ReadApplicationTemplate>();
+        reader.resetApduLog(); // clears APDU log
 
         if (ppse==null)
         {
@@ -676,7 +747,25 @@ public class EMVReader
         {
             parse(new ReadPPSE(),ppse,0,ppse.length-2);
         }
+        if ((applicationTemplates!=null)&&(applicationTemplates.size()>=1))
+        {
+            ReadApplicationTemplate rat=null;
+            byte maxPriority=0;
 
+            for(ReadApplicationTemplate candidate:applicationTemplates)
+            {
+                if(candidate.getApplicationPriorityIndicator()>maxPriority)
+                {
+                    maxPriority=candidate.getApplicationPriorityIndicator();
+                    aid=candidate.aid;
+                    rid=candidate.rid;
+                    issuer=candidate.issuer;
+                    rat=candidate;
+                }
+            }
+            // Just reading the application having minimal application priority indicator
+            rat.read();
+        }
         // All APDU work is done - but we may have to decrypt SDAD now (mastercard)
         if(applicationCryptogram==null && sdad_encrypted!=null)
         {
@@ -684,6 +773,7 @@ public class EMVReader
         }
 
         Log.i(getClass().getName(),"FINISHED !!!!!!!!!");
+        apduLog=reader.getApduLog();
         return;
     }
 

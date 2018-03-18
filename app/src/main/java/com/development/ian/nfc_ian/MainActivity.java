@@ -2,6 +2,7 @@ package com.development.ian.nfc_ian;
 
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
 import android.nfc.NfcAdapter;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
@@ -9,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -23,6 +25,7 @@ public class MainActivity extends AppCompatActivity {
     private PendingIntent pendingIntent;
     private TextView pan, issuer, expires, message, decision,applicationCryptogram,atc;
     private MainActivity instance;
+    private String apduLog;
 
     // Input tags
     private String ttq="33000000";
@@ -35,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
     private String txType="00";
     private String unpredicatableNumber="CAFEBABE";
     private String terminalType="23";
+    private String gacp1="50";
 
     // Output tags
     private String cardNumber;
@@ -44,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
     private String aip;
     private String card_atc;
 
+    public static String version;
 
     public MainActivity()
     {
@@ -71,6 +76,7 @@ public class MainActivity extends AppCompatActivity {
                 intent.putExtra("txType",txType);
                 intent.putExtra("unpredicatableNumber",unpredicatableNumber);
                 intent.putExtra("terminalType",terminalType);
+                intent.putExtra("gacp1",gacp1);
 
                 // startActivity(intent);
                 startActivityForResult(intent,0);
@@ -101,6 +107,9 @@ public class MainActivity extends AppCompatActivity {
                 msg+="unpredicatableNumber:"+unpredicatableNumber+"\n";
                 msg+="aip:"+aip+"\n";
                 msg+="card_atc:"+card_atc+"\n";
+                msg+="\n";
+                msg+="APDU LOG\n";
+                msg+=apduLog;
                 intent.putExtra(Intent.EXTRA_TEXT,msg);
                 startActivity(Intent.createChooser(intent, "Send Email"));
             }
@@ -127,6 +136,13 @@ public class MainActivity extends AppCompatActivity {
         applicationCryptogram=(TextView)findViewById(R.id.Certificate);
         atc=(TextView)findViewById(R.id.Atc);
 
+        try {
+
+
+            PackageInfo pInfo = this.getPackageManager().getPackageInfo(getPackageName(), 0);
+            version = pInfo.versionName;
+        }
+        catch(Exception e){};
     }
 
     @Override
@@ -146,14 +162,17 @@ public class MainActivity extends AppCompatActivity {
             txType=data.getStringExtra("txType");
             unpredicatableNumber=data.getStringExtra("unpredicatableNumber");
             terminalType=data.getStringExtra("terminalType");
+            gacp1=data.getStringExtra("gacp1");
 
         }
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        //disable options menu
-        return false;
+
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_main, menu);
+        return true;
     }
 
     @Override
@@ -161,6 +180,8 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         if (id == R.id.action_settings) {
+            Intent i=new Intent(this,Credits.class);
+            startActivity(i);
             return true;
         }
 
@@ -193,11 +214,14 @@ public class MainActivity extends AppCompatActivity {
         asyncCardRead.setTxType(txType);
         asyncCardRead.setUnpredicatableNumber(unpredicatableNumber);
         asyncCardRead.setTerminalType(terminalType);
+        asyncCardRead.setGacp1(gacp1);
         asyncCardRead.execute(intent);
     }
 
     private void displayTrack2(EMVReader emvReader){
         //Update the UI with card info
+        apduLog=emvReader.apduLog;
+
         expires.setText(getResources().getString(R.string.expiry,
                 emvReader.expiryMonth, emvReader.expiryYear));
         pan.setText(getResources().getString(R.string.pan, emvReader.pan));
@@ -243,6 +267,7 @@ public class MainActivity extends AppCompatActivity {
             sb.append(String.format("%02x", b));
         return sb.toString();
     }
+
 
 
 }

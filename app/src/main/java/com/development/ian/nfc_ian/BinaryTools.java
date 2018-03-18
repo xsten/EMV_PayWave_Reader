@@ -168,6 +168,8 @@ public class BinaryTools
     }
     public static String toHex(byte[] in)
     {
+        if(in==null) return "";
+
         StringBuilder sb = new StringBuilder(in.length * 2);
         for(byte b: in)
             sb.append(String.format("%02x", b));
@@ -175,6 +177,8 @@ public class BinaryTools
     }
     public static byte[] toBin(String s) throws IllegalArgumentException
     {
+        if(s==null)return new byte[0];
+
         int len = s.length();
         byte[] data = new byte[len / 2];
         for (int i = 0; i < len; i += 2) {

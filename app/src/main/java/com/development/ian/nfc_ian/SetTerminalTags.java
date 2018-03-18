@@ -86,6 +86,9 @@ public class SetTerminalTags extends AppCompatActivity {
                 tv=(TextView)SetTerminalTags.this.findViewById(R.id.TerminalType_field);
                 data.putExtra("terminalType",tv.getText().toString());
 
+                tv=(TextView)SetTerminalTags.this.findViewById(R.id.GacP1);
+                data.putExtra("gacp1",tv.getText().toString());
+
                 setResult(RESULT_OK,data);
                 finish();
             }
@@ -229,6 +232,19 @@ public class SetTerminalTags extends AppCompatActivity {
                 startActivityForResult(intent,0);
             }
         });
+
+        b=(Button)findViewById(R.id.GacP1Button);
+        b.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent=new Intent(getApplicationContext(),set_gac_options.class);
+                TextView tv=(TextView)findViewById(R.id.GacP1);
+                intent.putExtra("gacp1",tv.getText().toString());
+                startActivityForResult(intent,0);
+            }
+        });
+
+        ((Button)findViewById(R.id.button2)).requestFocus();
     }
 
     @Override
@@ -255,6 +271,8 @@ public class SetTerminalTags extends AppCompatActivity {
                 ((TextView)findViewById(R.id.Currency_field)).setText(data.getStringExtra("curcy"));
             if(data.getStringExtra("country")!=null)
                 ((TextView)findViewById(R.id.TerminalCountryCode_field)).setText(data.getStringExtra("country"));
+            if(data.getStringExtra("gacp1")!=null)
+                ((TextView)findViewById(R.id.GacP1)).setText(data.getStringExtra("gacp1"));
 
         }
     }

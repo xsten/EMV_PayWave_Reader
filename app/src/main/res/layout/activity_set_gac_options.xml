@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.development.ian.nfc_ian.set_gac_options">
+
+    <TextView
+        android:id="@+id/certif_to_generate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Certificate to generate"/>
+    <RadioGroup
+        android:id="@+id/certif2genradiogroup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/certif_to_generate"
+        >
+        <RadioButton
+            android:id="@+id/aac"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="AAC"
+            />
+        <RadioButton
+            android:id="@+id/tc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="TC"
+            />
+        <RadioButton
+            android:id="@+id/arqc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="ARQC"
+            />
+    </RadioGroup>
+    <TextView
+        android:id="@+id/cdasiggeneration"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="CDA Signature Generation"
+        app:layout_constraintTop_toBottomOf="@+id/certif2genradiogroup"
+        />
+    <CheckBox
+        android:id="@+id/cdaSignatureRequestedRadioButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/cdasiggeneration"
+        android:text="CDA Signature Requested"
+        />
+    <Button
+        android:id="@+id/buttonGacCancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="8dp"
+        android:text="@android:string/cancel"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/cdaSignatureRequestedRadioButton" />
+
+    <Button
+        android:id="@+id/buttonGacOK"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="8dp"
+        android:text="@android:string/ok"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/cdaSignatureRequestedRadioButton" />
+
+
+</android.support.constraint.ConstraintLayout>

@@ -20,6 +20,7 @@ public class AsyncCardRead extends AsyncTask<Intent, Void, EMVReader> {
     private String txType="00";
     private String unpredicatableNumber;
     private String terminalType;
+    private String gacp1;
 
     public String getTtq() {
         return ttq;
@@ -28,6 +29,10 @@ public class AsyncCardRead extends AsyncTask<Intent, Void, EMVReader> {
     public void setTtq(String ttq) {
         this.ttq = ttq;
     }
+
+    public String getGacp1() { return gacp1; }
+
+    public void setGacp1(String gacp1) { this.gacp1=gacp1; };
 
     public String getAmount() {
         return amount;
@@ -110,7 +115,7 @@ public class AsyncCardRead extends AsyncTask<Intent, Void, EMVReader> {
 
         try {
             emvReader = new EMVReader(paywaveHandler, null, paywaveHandler.transceive(EMVReader.SELECT_PPSE));
-            emvReader.read(ttq,amount,amountOther,terminalCountryCode,tvr,curcy,txDate,txType,unpredicatableNumber,terminalType);
+            emvReader.read(ttq,amount,amountOther,terminalCountryCode,tvr,curcy,txDate,txType,unpredicatableNumber,terminalType,gacp1);
             return emvReader;
         } catch (IOException e) {
             Log.e(getClass().getName(),"Exception caught :",e);
